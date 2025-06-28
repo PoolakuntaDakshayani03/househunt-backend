@@ -10,12 +10,22 @@ const {
 } = require('../controllers/propertyController');
 const verifyToken = require('../middleware/verifyToken');
 
-router.post('/owner/properties', verifyToken, addProperty);
-router.get('/owner/properties', verifyToken, getOwnerProperties);
+// Route to add a property (used by owner)
+router.post('/', verifyToken, addProperty);
 
-router.get('/properties', getAllProperties);
-router.get('/properties/:id', getPropertyById);
-router.put('/properties/:id', verifyToken, updateProperty);
-router.delete('/properties/:id', verifyToken, deleteProperty);
+// Get all properties (for renters/public)
+router.get('/', getAllProperties);
+
+// Get specific property by ID
+router.get('/:id', getPropertyById);
+
+// Update property
+router.put('/:id', verifyToken, updateProperty);
+
+// Delete property
+router.delete('/:id', verifyToken, deleteProperty);
+
+// Get properties by logged-in owner (protected route)
+router.get('/owner/:ownerId', verifyToken, getOwnerProperties);
 
 module.exports = router;
