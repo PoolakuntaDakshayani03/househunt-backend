@@ -1,31 +1,21 @@
 const express = require('express');
+const router = express.Router();
 const {
   addProperty,
   getAllProperties,
   getPropertyById,
   updateProperty,
   deleteProperty,
-  getOwnerProperties
+  getOwnerProperties,
 } = require('../controllers/propertyController');
+const verifyToken = require('../middleware/verifyToken');
 
-const router = express.Router();
+router.post('/owner/properties', verifyToken, addProperty);
+router.get('/owner/properties', verifyToken, getOwnerProperties);
 
-// ✅ Get all properties
-router.get('/', getAllProperties);
-
-// ✅ Get single property by ID
-router.get('/:id', getPropertyById);
-
-// ✅ Get properties by owner ID
-router.get('/owner/:ownerId', getOwnerProperties);
-
-// ✅ Add new property
-router.post('/', addProperty);
-
-// ✅ Update property by ID
-router.put('/:id', updateProperty);
-
-// ✅ Delete property by ID
-router.delete('/:id', deleteProperty);
+router.get('/properties', getAllProperties);
+router.get('/properties/:id', getPropertyById);
+router.put('/properties/:id', verifyToken, updateProperty);
+router.delete('/properties/:id', verifyToken, deleteProperty);
 
 module.exports = router;
