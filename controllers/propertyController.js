@@ -1,12 +1,21 @@
 const Property = require('../models/Property');
 
-// Create a new property
+// Create a new property (owner is taken from token)
 const addProperty = async (req, res) => {
   try {
-    const prop = new Property(req.body);
+    const { title, location, rent } = req.body;
+
+    const prop = new Property({
+      title,
+      location,
+      rent,
+      owner: req.user.id, // ✅ Owner from token
+    });
+
     await prop.save();
     res.status(201).json(prop);
   } catch (err) {
+    console.error('Add Property Error:', err);
     res.status(500).json({ error: 'Failed to add property' });
   }
 };
@@ -17,6 +26,7 @@ const getAllProperties = async (req, res) => {
     const properties = await Property.find().populate('owner', 'name email');
     res.json(properties);
   } catch (err) {
+    console.error('Get All Properties Error:', err);
     res.status(500).json({ error: 'Failed to fetch properties' });
   }
 };
@@ -28,6 +38,7 @@ const getPropertyById = async (req, res) => {
     if (!property) return res.status(404).json({ error: 'Property not found' });
     res.json(property);
   } catch (err) {
+    console.error('Get Property By ID Error:', err);
     res.status(500).json({ error: 'Failed to fetch property' });
   }
 };
@@ -38,6 +49,7 @@ const updateProperty = async (req, res) => {
     const updated = await Property.findByIdAndUpdate(req.params.id, req.body, { new: true });
     res.json(updated);
   } catch (err) {
+    console.error('Update Property Error:', err);
     res.status(500).json({ error: 'Failed to update property' });
   }
 };
@@ -48,17 +60,19 @@ const deleteProperty = async (req, res) => {
     await Property.findByIdAndDelete(req.params.id);
     res.json({ message: 'Property deleted' });
   } catch (err) {
+    console.error('Delete Property Error:', err);
     res.status(500).json({ error: 'Failed to delete property' });
   }
 };
 
-// Get properties owned by a specific owner
+// Get properties owned by the logged-in owner (no ownerId in params)
 const getOwnerProperties = async (req, res) => {
   try {
-    const { ownerId } = req.params;
+    const ownerId = req.user.id; // ✅ Secure from token
     const properties = await Property.find({ owner: ownerId });
     res.json(properties);
   } catch (err) {
+    console.error('Get Owner Properties Error:', err);
     res.status(500).json({ error: 'Error fetching owner properties' });
   }
 };
