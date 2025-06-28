@@ -13,6 +13,7 @@ const propertyRoutes = require('./routes/propertyRoutes');
 const bookingRoutes = require('./routes/bookingRoutes');
 const messageRoutes = require('./routes/messageRoutes');
 
+
 const app = express();
 
 // ✅ CORS config to allow frontend hosted on Vercel
