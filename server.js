@@ -4,7 +4,7 @@ const mongoose = require('mongoose');
 const cors = require('cors');
 const dotenv = require('dotenv');
 
-// Load environment variables from .env file
+// Load environment variables
 dotenv.config();
 
 const authRoutes = require('./routes/authRoutes');
@@ -15,11 +15,16 @@ const messageRoutes = require('./routes/messageRoutes');
 
 const app = express();
 
-// Middleware
-app.use(cors());
+// ✅ CORS config to allow frontend hosted on Vercel
+app.use(cors({
+  origin: 'https://househunt-frontend.vercel.app', // <-- your frontend domain
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  credentials: true
+}));
+
 app.use(express.json());
 
-// Connect MongoDB
+// ✅ Connect MongoDB
 const connectDB = async () => {
   try {
     await mongoose.connect(process.env.MONGO_URI, {
@@ -35,17 +40,18 @@ const connectDB = async () => {
 
 connectDB();
 
-// Routes
+// ✅ Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/properties', propertyRoutes);
 app.use('/api/bookings', bookingRoutes);
 app.use('/api/messages', messageRoutes);
 
-// Optional root check
+// ✅ Health check endpoint
 app.get('/', (req, res) => {
   res.send('API is running...');
 });
 
+// ✅ Start server
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}...`));
