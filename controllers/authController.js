@@ -16,7 +16,7 @@ const registerUser = async (req, res) => {
     });
 
     const token = jwt.sign({ id: newUser._id, role: newUser.role }, process.env.JWT_SECRET);
-    res.json({ token });
+    res.json({ token, role: newUser.role }); // ✅ return role for consistency
   } catch (err) {
     res.status(500).json({ error: 'User registration failed' });
   }
@@ -36,7 +36,9 @@ const loginUser = async (req, res) => {
       return res.status(403).json({ error: 'Owner not yet approved by admin' });
 
     const token = jwt.sign({ id: user._id, role: user.role }, process.env.JWT_SECRET);
-    res.json({ token });
+
+    // ✅ Include user role in the response
+    res.json({ token, role: user.role });
   } catch (err) {
     res.status(500).json({ error: 'Login failed' });
   }
